@@ -89,7 +89,6 @@ function MissingBuffs:UpdateFrame()
 			local _, class = UnitClass( "raid"..i );
 			raid[class] = raid[class] + 1;
 		end
-		raid[myclass] = raid[myclass] + 1;
 	else
 		raid = party;
 	end
@@ -157,6 +156,6 @@ function MissingBuffs:UpdateFrame()
 	
 	-- hide unused textures
 	for i = pos,10 do
-		self.icons[pos]:Hide();
+		self.icons[i]:Hide();
 	end
 end
