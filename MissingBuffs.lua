@@ -81,13 +81,17 @@ function MissingBuffs:UpdateFrame()
 	local n,m = GetNumRaidMembers(), GetNumPartyMembers();
 	for i = 1,m do
 		local _, class = UnitClass( "party"..i );
-		party[class] = party[class] + 1;
+		if class then
+			party[class] = party[class] + 1;
+		end
 	end
 	party[myclass] = party[myclass] + 1;
 	if n > 0 then
 		for i = 1,n do
 			local _, class = UnitClass( "raid"..i );
-			raid[class] = raid[class] + 1;
+			if class then
+				raid[class] = raid[class] + 1;
+			end
 		end
 	else
 		raid = party;
