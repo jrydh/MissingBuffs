@@ -31,7 +31,8 @@ function MissingBuffs:OnEnable()
 end
 
 function MissingBuffs:CreateFrame()
-	local f = CreateFrame( "Frame", "MissingBuffsFrame", UIParent, "SecureFrameTemplate" );
+	local f = CreateFrame( "Frame", "MissingBuffsFrame",
+	                    UIParent, "SecureFrameTemplate" );
 	self.frame = f;
 
 	f:SetWidth( 360 );
@@ -45,7 +46,8 @@ function MissingBuffs:CreateFrame()
 		tf:SetPoint( "TOPLEFT", f, "TOPRIGHT", 3-36*i, -3 );
 		tf:SetPoint( "BOTTOMRIGHT", f, "BOTTOMRIGHT", 33-36*i, 3 );
 		tf:EnableMouse( true );
-		tf:SetScript( "OnMouseDown", function() if IsAltKeyDown() then f:StartMoving(); end end );
+		tf:SetScript( "OnMouseDown",
+			function() if IsAltKeyDown() then f:StartMoving(); end end );
 		tf:SetScript( "OnMouseUp", function() f:StopMovingOrSizing(); end );
 		self.icons[i] = tf;
 
@@ -53,9 +55,14 @@ function MissingBuffs:CreateFrame()
 		t:SetAllPoints( tf );
 		t:SetAlpha( 0.5 );
 		self.icons[i].texture = t;
+		
+		local s = tf:CreateFontString( nil, "ARTWORK", "GameFontHighlight" );
+		s:SetPoint( "BOTTOMRIGHT", tf, "BOTTOMRIGHT", -3, 3 );
+		self.icons[i].number = s;
 	end
 	
-	f:SetScript( "OnUpdate", function() if self.needsUpdate then self:UpdateFrame(); end end );
+	f:SetScript( "OnUpdate",
+		function() if self.needsUpdate then self:UpdateFrame(); end end );
 	RegisterStateDriver( f, "visibility", "[combat] hide; show" );
 end
 
@@ -72,12 +79,14 @@ function MissingBuffs:UpdateFrame()
 
 	-- party/raid members
 	local _, myclass = UnitClass( "player" );
-	local party = { ["DEATHKNIGHT"] = 0, ["DRUID"] = 0, ["HUNTER"] = 0, ["MAGE"] = 0,
-		["PALADIN"] = 0, ["PRIEST"] = 0, ["ROGUE"] = 0, ["SHAMAN"] = 0, ["WARLOCK"] = 0,
-		["WARRIOR"] = 0 };
-	local raid = { ["DEATHKNIGHT"] = 0, ["DRUID"] = 0, ["HUNTER"] = 0, ["MAGE"] = 0,
-		["PALADIN"] = 0, ["PRIEST"] = 0, ["ROGUE"] = 0, ["SHAMAN"] = 0, ["WARLOCK"] = 0,
-		["WARRIOR"] = 0 };
+	local party = { ["DEATHKNIGHT"] = 0, ["DRUID"] = 0,
+		["HUNTER"] = 0, ["MAGE"] = 0, ["PALADIN"] = 0,
+		["PRIEST"] = 0, ["ROGUE"] = 0, ["SHAMAN"] = 0,
+		["WARLOCK"] = 0, ["WARRIOR"] = 0 };
+	local raid = { ["DEATHKNIGHT"] = 0, ["DRUID"] = 0,
+		["HUNTER"] = 0, ["MAGE"] = 0, ["PALADIN"] = 0,
+		["PRIEST"] = 0, ["ROGUE"] = 0, ["SHAMAN"] = 0,
+		["WARLOCK"] = 0, ["WARRIOR"] = 0 };
 	local n,m = GetNumRaidMembers(), GetNumPartyMembers();
 	for i = 1,m do
 		local _, class = UnitClass( "party"..i );
@@ -99,63 +108,72 @@ function MissingBuffs:UpdateFrame()
 	
 	-- test helper routine
 	local pos = 1;
-	local testbuff = function( ... )
+	local testbuff = function( k, ... )
 		for i = 1,select( "#", ... ) do
 			local id = select( i, ... );
 			name = GetSpellInfo( id );
-			if hasBuff[name] then return; end
+			if hasBuff[name] then k = k - 1; end
 		end
-		local id = select( 1, ... );
-		local _, _, icon = GetSpellInfo( id );
-		self.icons[pos].texture:SetTexture( icon );
-		self.icons[pos]:Show();
-		pos = pos + 1;
+		if k > 0 and pos <= 10 then
+			local id = select( 1, ... );
+			local _, _, icon = GetSpellInfo( id );
+			self.icons[pos].texture:SetTexture( icon );
+			self.icons[pos].number:SetText( k );
+			self.icons[pos]:Show();
+			pos = pos + 1;
+		end
 	end
 
-	local casters = { ["DRUID"] = true, ["HUNTER"] = true, ["MAGE"] = true,
-		["PALADIN"] = true, ["PRIEST"] = true, ["SHAMAN"] = true, ["WARLOCK"] = true };
+	local casters = { ["DRUID"] = true, ["HUNTER"] = true,
+		["MAGE"] = true, ["PALADIN"] = true, ["PRIEST"] = true,
+		["SHAMAN"] = true, ["WARLOCK"] = true };
 	local isCaster = casters[myclass];
 
 	-- self buffs
 	if myclass == "DEATHKNIGHT" then
-		testbuff( 48266, 48263, 48265 ); -- Presence
+		testbuff( 1, 48266, 48263, 48265 ); -- Presence
 	elseif myclass == "DRUID" then
-		testbuff( 467 ); -- Thorns
+		testbuff( 1, 467 ); -- Thorns
 	elseif myclass == "HUNTER" then
-		testbuff( 13165, 13164, 5118, 34074, 13161, 13159, 20043, 61846 ); -- Aspect
+		testbuff( 1, 13165, 13164, 5118, 34074,
+			     13161, 13159, 20043, 61846 ); -- Aspect
 	elseif myclass == "MAGE" then
-		testbuff( 6117, 168, 7302, 30482 ); -- Armor
-		testbuff( 604, 1008 ); -- Amplify/Dampen Magic
+		testbuff( 1, 6117, 168, 7302, 30482 ); -- Armor
+		testbuff( 1, 604, 1008 ); -- Amplify/Dampen Magic
 	elseif myclass == "PALADIN" then
 	elseif myclass == "PRIEST" then
-		testbuff( 588 ); -- Inner Fire
+		testbuff( 1, 588 ); -- Inner Fire
 	elseif myclass == "ROGUE" then
 	elseif myclass == "SHAMAN" then
 	elseif myclass == "WARLOCK" then
-		testbuff( 696, 706, 28176 ); -- Armor
+		testbuff( 1, 696, 706, 28176 ); -- Armor
 	elseif myclass == "WARRIOR" then
-		testbuff( 2457, 71, 2458 ); -- Stance
+		testbuff( 1, 2457, 71, 2458 ); -- Stance
 	end
 
 	-- party/raid buffs
 	if raid["DRUID"] > 0 then
-		testbuff( 1126, 21849 ); -- Mark of the Wild
+		testbuff( 1, 1126, 21849 ); -- Mark of the Wild
 	end
 	if raid["MAGE"] > 0 and isCaster then
-		testbuff( 1459, 23028, 61024, 61316, 54424 ); -- Arcane Intellect
+		testbuff( 1, 1459, 23028, 61024, 61316, 54424 ); -- Arcane Intellect
 	end
-	for i = 1,raid["PALADIN"] do
-		testbuff( 465, 7294, 19746, 19876, 19888, 19891, 32223 ); -- Aura
+	if raid["PALADIN"] > 0 then
+		testbuff( raid["PALADIN"], 465, 7294, 19746,
+		                 19876, 19888, 19891, 32223 ); -- Aura
+		testbuff( raid["PALADIN"], 20217, 25898, 19740,
+		             25782, 19742, 25894, 20911, 25899 ); -- Blessing
 	end
 	if raid["PRIEST"] > 0 then
-		testbuff( 1243, 21562 ); -- Power Word: Fortitude
+		testbuff( 1, 1243, 21562 ); -- Power Word: Fortitude
 		if isCaster then
-			testbuff( 14752, 27681 ); -- Divine Spirit
+			testbuff( 1, 14752, 27681 ); -- Divine Spirit
 		end
 	end
 	
 	if n > 0 then
-		testbuff( 57294 ); -- food buff
+		testbuff( 1, 57294 ); -- Well Fed
+		testbuff( 1, 53760, 54212, 53758, 53755 ); -- Flask
 	end
 	
 	-- hide unused textures
