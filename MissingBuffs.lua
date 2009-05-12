@@ -118,7 +118,7 @@ function MissingBuffs:UpdateFrame()
 			local id = select( 1, ... );
 			local _, _, icon = GetSpellInfo( id );
 			self.icons[pos].texture:SetTexture( icon );
-			self.icons[pos].number:SetText( k );
+			self.icons[pos].number:SetText( (k>1) and k or "" );
 			self.icons[pos]:Show();
 			pos = pos + 1;
 		end
