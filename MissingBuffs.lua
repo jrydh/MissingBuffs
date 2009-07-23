@@ -171,7 +171,8 @@ function MissingBuffs:UpdateFrame()
 		end
 	end
 	
-	if n > 0 then
+	local isArena = IsActiveBattlefieldArena();
+	if n > 0 and not isArena and GetRealZoneText() ~= "Wintergrasp" then
 		testbuff( 1, 57294 ); -- Well Fed
 		testbuff( 1, 53760, 54212, 53758, 53755 ); -- Flask
 	end
