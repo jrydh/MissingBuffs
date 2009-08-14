@@ -161,8 +161,8 @@ function MissingBuffs:UpdateFrame()
 	if raid["PALADIN"] > 0 then
 		testbuff( raid["PALADIN"], 465, 7294, 19746,
 		                 19876, 19888, 19891, 32223 ); -- Aura
-		testbuff( raid["PALADIN"], 20217, 25898, 19740,
-		             25782, 19742, 25894, 20911, 25899 ); -- Blessing
+		testbuff( min( raid["PALADIN"], 3 ), 20217, 25898, 19740,
+		             25782, 19742, 25894, 20911, 25899 ); -- Blessings
 	end
 	if raid["PRIEST"] > 0 then
 		testbuff( 1, 1243, 21562 ); -- Power Word: Fortitude
@@ -171,8 +171,8 @@ function MissingBuffs:UpdateFrame()
 		end
 	end
 	
-	local isArena = IsActiveBattlefieldArena();
-	if n > 0 and not isArena and GetRealZoneText() ~= "Wintergrasp" then
+	local _, instanceType = IsInInstance();
+	if n > 0 and ( instanceType == "none" or instanceType == "raid" ) then
 		testbuff( 1, 57294 ); -- Well Fed
 		testbuff( 1, 53760, 54212, 53758, 53755 ); -- Flask
 	end
